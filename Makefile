@@ -1,14 +1,16 @@
 CFLAGS= -c -fno-stack-protector -fpic -fshort-wchar -mno-red-zone -DEFI_FUNCTION_WRAPPER -I /usr/include/efi -I /usr/include/efi/x86_64/
 LDFLAGS= -nostdlib -znocombreloc -T /usr/lib/elf_x86_64_efi.lds -shared -Bsymbolic -L /usr/lib/ -l:libgnuefi.a -l:libefi.a
 
+all: docker
+
 docker:
-	docker build -t uefi-app .
+	docker buildx build --platform linux/amd64 -t uefi-app .
 	docker run -v $(shell pwd):/uefi -ti uefi-app
 
 .PHONY: qemu
 qemu: c
 	ls /uefi
-	qemu-system-x86_64 -cpu qemu64 -bios /usr/share/ovmf/OVMF.fd -nographic -drive file=fat:rw:/uefi
+	qemu-system-x86_64 -nographic -m 1G -pflash /usr/share/OVMF/OVMF_CODE.fd -net none -drive file=fat:rw:/uefi
 
 .PHONY: c
 c:

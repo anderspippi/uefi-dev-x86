@@ -1,5 +1,5 @@
 # docker build -t uefi .
-FROM ubuntu:16.04
+FROM ubuntu:22.04
 LABEL maintainer "Adrian L. Shaw <adrian.l.shaw@gmail.com" 
 
 RUN apt-get update -qq && apt-get install -y \
@@ -11,4 +11,4 @@ parted uefi.img -s -a minimal mklabel gpt && \
 parted uefi.img -s -a minimal mkpart EFI FAT16 2048s 93716s && \
 parted uefi.img -s -a minimal toggle 1 boot
 
-ENTRYPOINT [ "make", "qemu" ]
+CMD [ "make", "qemu" ]
